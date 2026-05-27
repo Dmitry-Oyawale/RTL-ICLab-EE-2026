@@ -61,4 +61,43 @@ reg [11:0] gain_r [0:35];
 reg [11:0] gain_gr [0:35];
 reg [11:0] gain_gb [0:35];
 reg [11:0] gain_b [0:35];
-endmodule
+
+function [3:0] get_x;
+    input [7:0] idx;
+    begin 
+        get_x = idx[3:0];
+    end 
+endfunction 
+
+function [3:0] get_y;
+    input [7:0] idx;
+    begin 
+        get_y = idx[7:4];
+    end 
+endfunction 
+
+function integer reflect16;
+    input integer v;
+    begin 
+        if (v < 0)
+            reflect16 = -v;
+        else if (v >= 16)
+            reflect16 = 30 - v;
+        else 
+            reflect16 = v;
+    end 
+endfunction
+
+function [7:0] idx_reflect;
+    input integer x;
+    input integer y;
+    integer xr;
+    integer yr;
+    begin 
+        xr = reflect16(x);
+        yr = reflect16(y);
+        idx_reflect = yr * 16 + xr;
+    end 
+endfunction
+
+
