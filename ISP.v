@@ -100,4 +100,34 @@ function [7:0] idx_reflect;
     end 
 endfunction
 
+function [1:0] bayer_type;
+    input integer x;
+    input integer y;
+    begin 
+        if ((y % 2) == 0 && (x % 2) == 0)
+            bayer_type = 2'd0;
+        else if ((y % 2) == 0 && (x % 2) == 1)
+            bayer_type = 2'd1;
+        else if ((y % 2) == 1 && (X % 2) == 0)
+            bayer_type = 2'd2;
+        else 
+            bayer_type = 2'd3;
+    end
+endfunction 
+
+function [11:0] get_gain;
+    input [1:0] get_gain;
+    input integer row;
+    input integer col;
+    integer gidx;
+    begin gidx = row * 6 + col;
+        gidx = row * 6 + col;
+        case (ch)
+            2'd0: get_gain = gain_r[gidx];
+            2'd1: get_gain = gain_gr[gidx];
+            2'd2: get_gain = gain_gb[gidx];
+            default: get_gain = gain_b[gidx];
+        endcase
+    end
+endfunction
 
