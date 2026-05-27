@@ -255,3 +255,69 @@ function [11:0] calc_lsc_pixel;
 endfunction
 
 
+function [11:0] calc_dpc_pixel;
+    input [7:0] idx;
+    integer x, y;
+    reg [11:0] p;
+    reg[11:0] h0, h1, h2, h3;
+    reg[11:0] v0, v1, v2, v3;
+    reg[11:0] d10, d11, d12, d13;
+    reg[11:0] d20, d21, d22, d23;
+    reg[11:0] mh, mv, md1, md2;
+    integer sh, sv, sd1, sd2;
+    reg [11:0] target;
+    begin
+        x = get_x(idx);
+        y = get_y(idx);
+        p = lsc_img(idx);
+
+        h0 = lsc_img[idx_reflect(x - 2, y)];
+        h1 = lsc_img[idx_reflect(x - 1, y)];
+        h2 = lsc_img[idx_reflect(x + 1, y)];
+        h3 = lsc_img[idx_reflect(x + 2, y)];
+
+        v0 = lsc_img[idx_reflect(x, y - 2)];
+        v1 = lsc_img[idx_reflect(x, y - 1)];
+        v2 = lsc_img[idx_reflect(x, y + 1)];
+        v3 = lsc_img[idx_reflect(x, y + 2)];
+
+        d10 = lsc_img[idx_reflect(x - 2, y - 2)];
+        d11 = lsc_img[idx_reflect(x - 1, y - 1)];
+        d12 = lsc_img[idx_reflect(x + 1, y + 1)];
+        d13 = lsc_img[idx_reflect(x + 2, y + 2)];
+
+        d20 = lsc_img[idx_reflect(x - 2, y + 2)];
+        d21 = lsc_img[idx_reflect(x - 1, y + 1)];
+        d22 = lsc_img[idx_reflect(x + 1, y - 1)];
+        d23 = lsc_img[idx_reflect(x + 2, y - 2)];
+
+        mh = median4(h0, h1, h2, h3);
+        mv = median4(v0, v1, v2, v3);
+        md1 = median4(d10, d11, d12, d13);
+        md2 = median4(d20, d21, d22, d23);
+
+        sh = sad4(h0, h1, h2, h3, mh);
+        sv = sad4(v0, v1, v2, v3, mv);
+        sd1 = sad4(d10, d11, d12, d13, md1);
+        sd2 = sad4(d20, d21, d22, d23, md2);
+
+        Target = mh;
+        if (sh < sv) begin
+            target = mv;
+            sh = sv;
+        end
+        if (sd1 < sh) begin
+            target = md1;
+            sh = sd1;
+        end
+        if (sd2 < sh) begin
+            target = md2;
+        end
+
+        if (abs_int(p-target) > TH)
+            calc_dpc_pixel = target;  
+        else 
+            calc_dpc_pixel = p;
+    end
+endfunction
+
