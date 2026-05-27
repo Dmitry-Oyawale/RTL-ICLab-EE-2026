@@ -116,7 +116,7 @@ function [1:0] bayer_type;
 endfunction 
 
 function [11:0] get_gain;
-    input [1:0] get_gain;
+    input [1:0] ch;
     input integer row;
     input integer col;
     integer gidx;
@@ -131,3 +131,74 @@ function [11:0] get_gain;
     end
 endfunction
 
+function [11:0] clip12;
+    input integer v;
+    begin 
+        if (v < 0)
+            clip12 = 12'd0;.
+        else if (v > 4095)
+            clip12 = 12'd4095;
+        else 
+            clip12 = v[11:0];
+    end
+endfunction
+
+function integer abs_int;
+    input integer a;
+    begin 
+        if (a < 0)
+            abs_int = -a;
+        else
+            abs_int = a;
+    end
+endfunction
+
+function [11:0] avg2;
+    input [11:0] a;
+    input [11:0] b;
+    integer t;
+    begin 
+        t = a + b;
+        avg2 = t >> 1;
+    end
+endfunction
+
+function [11:0] avg4;
+    input [11:0] a;
+    input [11:0] b;
+    input [11:0] c;
+    input [11:0] d;
+    integer t;
+    begin
+        t = a + b + c + d;
+        avg4 = t >> 2;
+    end
+endfunction
+
+function [11:0] median4;
+    input [11:0] a;
+    input [11:0] b;
+    input [11:0] c;
+    input [11:0] d;
+    reg [11:0] v0, v1, v2, v3, tmp;
+    begin
+        v0 = a; v1 = b; v2 = c; v3 = d;
+        if (v0 > v1) begin tmp = v0; v0 = v1; v1 = tmp; end
+        if (v2 > v3) begin tmp = v2; v2 = v3; v3 = tmp; end
+        if (v0 > v2) begin tmp = v0; v0 = v2; v2 = tmp; end
+        if (v1 > v3) begin tmp = v1; v1 = v3; v3 = tmp; end
+        if (v1 > v2) begin tmp = v1; v1 = v2; v2 = tmp; end
+        median4 = (v1 + v2) >> 1;
+    end
+endfunction
+
+function integer sad4;
+    input [11:0] a;
+    input [11:0] b;
+    input [11:0] c;
+    input [11:0] d;
+    input [11:0] med;
+    begin 
+        sad4 = abs_int(a - med) + abs_int(b - med) + abs_int(c - med) + abs_int(d - med);
+    end
+endfunction
