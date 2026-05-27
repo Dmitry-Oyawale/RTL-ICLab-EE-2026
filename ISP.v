@@ -35,4 +35,30 @@ output reg [11:0] b_out;
 //   Design
 //==============================
 
+localparam IMG_W = 16;
+localparam IMG_H = 16;
+localparam TOTAL_PIXELS = 256;
+localparam TH = 320;
+localparam BLACK_LEVEL = 64;
+
+localparam S_IDLE = 3'd0;
+localparam S_INPUT = 3'd1;
+localparam S_LSC = 3'd2;
+localparam S_DPC = 3'd3;
+localparam S_OUTPUT = 3'd4;
+
+reg [2:0] state;
+reg [7:0] in_cnt;
+reg [7:0] calc_cnt;
+reg [7:0] out_cnt;
+reg [7:0] param_cnt;
+
+reg [11:0] raw_img [0:255];
+reg [11:0] lsc_img [0:255];
+reg [11:0] dpc_img [0:255];
+
+reg [11:0] gain_r [0:35];
+reg [11:0] gain_gr [0:35];
+reg [11:0] gain_gb [0:35];
+reg [11:0] gain_b [0:35];
 endmodule
