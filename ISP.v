@@ -321,3 +321,47 @@ function [11:0] calc_dpc_pixel;
     end
 endfunction
 
+function [11:0] get_dpc;
+    input integer x;
+    input integer y;
+    begin
+        get_dpc = dpc_img[idx_reflect(x,y)];
+    end
+endfunction
+
+function [11:0] ccm_r;
+    input [11:0] rr;
+    input [11:0] gg;
+    input [11:0] bb;
+    integer t;
+    begin t = 1100 * rr - 50 * gg - 50 * bb + 512;
+        t = 1100 * rr - 50 * gg -50 * bb + 512;
+        t = t >>> 10;
+        ccm_r = clip12(t);
+    end
+endfunction
+
+function [11:0] ccm_g;
+    input [11:0] rr;
+    input [11:0] gg;
+    input [11:0] bb;
+    integer t;
+
+    begin 
+        t = -50 * rr + 1100 * gg - 50 * bb + 512;
+        t = t >>> 10;
+        ccm_g = clip12(t);
+    end
+endfunction
+
+function [11:0] ccm_b;
+    input [11:0] rr;
+    input [11:0] gg;
+    input [11:0] bb;
+    integer t;
+    begin 
+        t = -50 * rr - 50 * gg + 1100 * bb + 512;
+        t = t >>> 10;
+        ccm_b = clip12(t);
+    end
+endfunction
